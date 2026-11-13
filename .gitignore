@@ -1,0 +1,22 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Rust
+target/
+
+# Node / frontend
+node_modules/
+dist/
+
+# SQLite database and its side files
+*.db
+*.db-shm
+*.db-wal
+
+# Editor / OS junk
+.vscode/
+.idea/
+*.swp
+.DS_Store
