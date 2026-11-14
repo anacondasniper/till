@@ -23,3 +23,8 @@ export function addToCart(id: number) {
 	cart[id] = (cart[id] ?? 0) + 1;
 	saveCart(cart);
 }
+
+export function cartCount(): number {
+	const cart = loadCart();
+	return Object.values(cart).reduce((sum, qty) => sum+qty, 0)
+}

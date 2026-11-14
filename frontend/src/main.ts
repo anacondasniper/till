@@ -1,16 +1,19 @@
 import './style.css'
 import type { Product } from './types';
-import { addToCart } from './cart';
+import { addToCart, cartCount } from './cart';
 import { formatPrice } from './format';
 
 const app = document.querySelector<HTMLDivElement>('#app')!
+let products: Product[] = [];
+
 app.addEventListener('click', (event) => {
 	const target = event.target as HTMLElement;
 	const button = target.closest<HTMLButtonElement>('button[data-id]');
 	if (!button) {
 		return;
 	}
-	addToCart(Number(button.dataset.id))
+	addToCart(Number(button.dataset.id));
+	render();
 })
 
 function productCardHtml(product: Product): string {
@@ -33,10 +36,11 @@ function productGridHtml(products: Product[]): string {
 	`
 }
 
-function render(products: Product[]) {
+function render() {
 
 	app.innerHTML = `
 		<h1>till</h1>
+		<h2>Cart (${cartCount()})</h2>
 
 		${productGridHtml(products)}
 	`
@@ -48,8 +52,8 @@ async function load() {
 		if (!res.ok) {
 			throw new Error(`GET /api/products failed with status ${res.status}`);
 		}
-		const products: Product[] = await res.json();
-		render(products)
+		products = await res.json();
+		render()
 	} catch (err) {
     	console.error(err)	
 		app.innerHTML = `<h1>till</h1><p>Couldn't load products. Try again later.</p>`;
