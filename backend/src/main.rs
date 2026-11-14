@@ -2,6 +2,7 @@ use axum::{Router, Json};
 use axum::routing::get;
 use tokio::net::TcpListener;
 use serde::Serialize;
+use sqlx::SqlitePool;
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -38,6 +39,8 @@ async fn products() -> Json<Vec<Product>> {
 
 #[tokio::main]
 async fn main() {
+    let pool = SqlitePool::connect("sqlite://till.db?mode=rwc").await.unwrap();
+    sqlx::migrate!().run(&pool).await.unwrap();
     let router = Router::new().route(
         "/api/products", get(products)
     );
