@@ -13,8 +13,8 @@ Early planning: writing README.md
 - Hosting: shop.domain.com, behind Caddy
 
 ## Build plan
-- [ ] Static product page with hardcoded data
-- [ ] Rust API serving products from SQLite
+- [_] Static product page with hardcoded data
+- [_] Rust API serving products from SQLite
 - [ ] Cart (localStorage)
 - [ ] Stripe Checkout + webhook
 - [ ] Admin page to add/edit products and stock
