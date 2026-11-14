@@ -1,6 +1,7 @@
 import './style.css'
 import type { Product } from './types';
 import { addToCart } from './cart';
+import { formatPrice } from './format';
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 app.addEventListener('click', (event) => {
@@ -12,22 +13,32 @@ app.addEventListener('click', (event) => {
 	addToCart(Number(button.dataset.id))
 })
 
+function productCardHtml(product: Product): string {
+	return `
+	<div class="productCard">
+		<h2>${product.name}</h2>
+		<img src="${product.imageUrl}" alt="${product.name}">
+		<p>${product.description}</p>
+		<h3>${formatPrice(product.priceCents)}</h3>
+		<button data-id="${product.id}">ADD TO CART</button>
+	</div>
+	`
+}
+
+function productGridHtml(products: Product[]): string {
+	return `
+		<div class="productGrid">
+			${products.map(productCardHtml).join('')}
+		</div>
+	`
+}
+
 function render(products: Product[]) {
 
 	app.innerHTML = `
 		<h1>till</h1>
 
-		<div class="productGrid">
-			${products.map(n => `
-				<div class="productCard">
-					<h2>${n.name}</h2>
-					<img src="${n.imageUrl}" alt="${n.name}">
-					<p>${n.description}</p>
-					<h3>$${(n.priceCents / 100).toFixed(2)}</h3>
-					<button data-id="${n.id}">ADD TO CART</button>
-				</div>
-			`).join('')}
-		</div>
+		${productGridHtml(products)}
 	`
 }
 
@@ -40,7 +51,7 @@ async function load() {
 		const products: Product[] = await res.json();
 		render(products)
 	} catch (err) {
-    	console.log(err)	
+    	console.error(err)	
 		app.innerHTML = `<h1>till</h1><p>Couldn't load products. Try again later.</p>`;
 	}
 }
