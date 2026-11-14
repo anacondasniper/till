@@ -1,7 +1,16 @@
 import './style.css'
 import type { Product } from './types';
+import { addToCart } from './cart';
 
 const app = document.querySelector<HTMLDivElement>('#app')!
+app.addEventListener('click', (event) => {
+	const target = event.target as HTMLElement;
+	const button = target.closest<HTMLButtonElement>('button[data-id]');
+	if (!button) {
+		return;
+	}
+	addToCart(Number(button.dataset.id))
+})
 
 function render(products: Product[]) {
 
@@ -13,8 +22,9 @@ function render(products: Product[]) {
 				<div class="productCard">
 					<h2>${n.name}</h2>
 					<img src="${n.imageUrl}" alt="${n.name}">
-					<p>${n.description} ID #${n.id}</p>
+					<p>${n.description}</p>
 					<h3>$${(n.priceCents / 100).toFixed(2)}</h3>
+					<button data-id="${n.id}">ADD TO CART</button>
 				</div>
 			`).join('')}
 		</div>

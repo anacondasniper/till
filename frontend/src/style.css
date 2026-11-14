@@ -5,6 +5,7 @@
   --color-text: #1c1c1c;
   --color-muted: #6b6b6b;
   --color-accent: #2f6f4f;
+  --color-on-accent: #ffffff;
   --color-border: #e3e3dc;
 
   /* type */
@@ -16,6 +17,21 @@
   --space-2: 1rem;
   --space-3: 2rem;
   --radius: 8px;
+
+  /* color scheme */
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-bg: #151716;
+		--color-surface: #1e2120;
+		--color-text: #e8e8e3;
+		--color-muted: #9a9a94;
+		--color-accent: #5fb88a;
+		--color-border: #2e3330;
+		--color-on-accent: #0f1a14;
+	}
 }
 
 body {
@@ -42,6 +58,27 @@ body {
 .productCard img {
 	width: 100%;
 	height: auto;
+}
+
+.productCard button {
+	background: var(--color-accent);
+	color: var(--color-on-accent);
+	border: none;
+	border-radius: var(--radius);
+	padding: var(--space-1) var(--space-2);
+	min-height: 44px;
+	font: inherit;
+	cursor: pointer;
+	transition: filter 0.2s;
+}
+
+button:hover {
+	filter: brightness(1.1);
+}
+
+button:focus-visible {
+	outline: 2px solid var(--color-text);
+	outline-offset: 2px;
 }
 
 .productCard:hover {
