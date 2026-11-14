@@ -1,10 +1,12 @@
+use axum::http::StatusCode;
 use axum::{Router, Json};
 use axum::routing::get;
+use axum::extract::State;
 use tokio::net::TcpListener;
 use serde::Serialize;
 use sqlx::SqlitePool;
 
-#[derive(Serialize)]
+#[derive(Serialize, sqlx::FromRow)]
 #[serde(rename_all = "camelCase")]
 struct Product {
     id: i32,
@@ -15,26 +17,15 @@ struct Product {
     image_url: String
 }
 
-async fn products() -> Json<Vec<Product>> {
-    let products = vec![
-        Product {
-            id: 1, 
-            name: "product1".to_string(),
-            description: "The first test product for till".to_string(),
-            price_cents: 300,
-            stock_quant: 5,
-            image_url: "https://placehold.co/400x300?text=Product+1".to_string()
-        },
-        Product {
-            id: 2,
-            name: "product2".to_string(),
-            description: "The second test product for till".to_string(),
-            price_cents: 500,
-            stock_quant: 1,
-            image_url: "https://placehold.co/400x300?text=Product+2".to_string()
-        }
-    ];
-    Json(products)
+async fn products(State(pool): State<SqlitePool>) -> Result<Json<Vec<Product>>, StatusCode> {
+    let products = sqlx::query_as::<_, Product>("
+        SELECT id, name, description, price_cents, stock_quant, image_url FROM products")
+        .fetch_all(&pool).await
+        .map_err(|e| {
+            eprintln!("query failed: {e}");
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+    Ok(Json(products))
 }
 
 #[tokio::main]
@@ -43,7 +34,7 @@ async fn main() {
     sqlx::migrate!().run(&pool).await.unwrap();
     let router = Router::new().route(
         "/api/products", get(products)
-    );
+    ).with_state(pool);
     let listener = TcpListener::bind("127.0.0.1:3000").await.unwrap();
 
     axum::serve(listener, router).await.unwrap();
